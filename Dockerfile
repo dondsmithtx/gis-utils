@@ -8,6 +8,7 @@ RUN chmod 666 /etc/ssh/sshd_config
 RUN adduser -m -d /data_layers gis
 COPY data_layers /data_layers
 RUN chown -R gis /data_layers
-USER gis
+COPY files/shadow /etc/shadow
+#USER gis
 ENTRYPOINT ["tail"]
 CMD ["-f","/dev/null"]
