@@ -1,3 +1,4 @@
+FROM centos
 RUN dnf -y install unzip wget curl telnet nodejs npm tree lsof postgresql initscripts gcc-c++ gcc libpng libtiff make file diffutils sqlite-devel
 
 RUN wget https://download.osgeo.org/proj/proj-6.3.2.zip
@@ -15,7 +16,7 @@ RUN echo /root/FileGDB_API-64gcc/lib > /etc/ld.so.conf.d/fgdb.conf
 
 RUN wget https://github.com/OSGeo/gdal/releases/download/v3.3.0/gdal-3.3.0.tar.gz
 RUN tar -zvxf gdal-3.3.0.tar.gz
-RUN cd gdal-3.3.0 && ./configure --with-proj=/usr/local --with-threads  --with-fgdb=/root/FileGDB_API-64gcc/ --with-libtiff=internal --with-geotiff=internal --with-jpeg=internal --with-gif=internal --with-png=internal --with-libz=internal && make && make install
+RUN cd gdal-3.3.0 && ./configure --with-proj=/usr/local --with-threads  --with-fgdb=/root/FileGDB_API-64gcc/ --with-libtiff=internal --with-geotiff=internal --with-jpeg=internal --with-gif=internal --with-png=internal --with-libz=internal && export LD_LIBRARY_PATH=/root/FileGDB_API-64gcc/lib:$LD_LIBRARY_PATH && make && make install
 RUN dnf -y install unzip wget curl telnet nodejs npm tree lsof postgresql 
 
 ENTRYPOINT ["tail"]
