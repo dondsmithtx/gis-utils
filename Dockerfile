@@ -73,6 +73,7 @@ RUN cd /root && \
     wget http://postgis.net/stuff/postgis-3.1.2dev.tar.gz && \
     tar -xvzf postgis-3.1.2dev.tar.gz && \
     cd postgis-3.1.2dev && \
+    ./configure --with-pgconfig=/usr/bin/pg_config \
     ./configure --with-gdalconfig=/usr/local/bin/gdal-config \
                 --with-geosconfig=/usr/bin/geos-config \
                 --with-xml2config=/usr/bin/xml2-config \
