@@ -14,7 +14,7 @@ RUN yum -y install curl\
                    libpq-devel\
                    libxml2\
                    libxml2-devel\
-                   lsof
+                   lsof\
                    make\
                    nodejs\
                    npm\ 
