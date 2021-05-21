@@ -21,6 +21,7 @@ RUN yum -y install curl\
                    p7zip\
                    perl\
                    postgresql\
+                   postgresql-server-devel\
                    rsync\
                    sqlite-devel\
                    telnet\
@@ -30,23 +31,30 @@ RUN yum -y install curl\
                    unzip\
                    zip
 
-# Install Project 6 required for gdal
-RUN wget https://download.osgeo.org/proj/proj-6.3.2.zip &&\
+RUN echo "########## Installing postgresql13 ##########" &&\
+    dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm &&\
+    dnf -qy module disable postgresql &&\
+    dnf install -y postgresql13-server &&\
+    yum -y install postgresql13-devel 
+
+RUN echo "########## Installing Proj6 required for gdal ##########" &&\
+    cd /root &&\
+    wget https://download.osgeo.org/proj/proj-6.3.2.zip &&\
     unzip proj-6.3.2.zip &&\
-    cd proj-6.3.2 && ./configure &&\
+    cd proj-6.3.2 &&\
+    ./configure &&\
     make && make install
 
-# Install the FileGDB API Version 1.5.1 (1.4 doesn't support latest g++)
-# Required for fgdb
-RUN cd /root && \ 
+RUN echo "########## Installing FileGDB API 1.5.1 for fgdb gdal driver  ##########" &&\
+    cd /root && \ 
     wget https://github.com/Esri/file-geodatabase-api/raw/master/FileGDB_API_1.5.1/FileGDB_API_1_5_1-64gcc51.tar.gz &&\
     tar xvzf FileGDB_API_1_5_1-64gcc51.tar.gz &&\
     cd FileGDB_API-64gcc51 &&\
     cp lib/*.so /usr/lib64 &&\
     echo 'include /root/FileGDB_API-64gcc51/lib' > /etc/ld.so.conf.d/fgdb.conf
 
-# Install gdal and fgdb driver
-RUN cd /root &&\
+RUN echo "########## Installing gdal with fgdb  ##########" &&\
+    cd /root &&\
     wget https://github.com/OSGeo/gdal/releases/download/v3.3.0/gdal-3.3.0.tar.gz &&\
     tar -zvxf gdal-3.3.0.tar.gz &&\
     cd gdal-3.3.0 &&\
@@ -62,8 +70,8 @@ RUN cd /root &&\
     export LD_LIBRARY_PATH=/root/FileGDB_API-64gcc/lib:$LD_LIBRARY_PATH &&\
     make && make install
 
-# Install libiconv
-RUN cd /root &&\  
+RUN echo "########## Installing libiconv ##########" &&\
+    cd /root &&\  
     wget https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz &&\
     tar xvzf libiconv-1.16.tar.gz &&\
     cd libiconv-1.16 &&\
@@ -71,12 +79,12 @@ RUN cd /root &&\
     cd /root/libiconv-1.16 &&\
     make && make install 
 
-# Install postgis
-RUN cd /root && \ 
-    wget http://postgis.net/stuff/postgis-3.1.2dev.tar.gz &&\
-    tar -xvzf postgis-3.1.2dev.tar.gz &&\
-    cd postgis-3.1.2dev &&\
-    ./configure --with-pgconfig=/usr/bin/pg_config\
+RUN echo "########## Installing postgis ##########" &&\
+    cd /root && \ 
+    wget http://postgis.net/stuff/postgis-3.2.0dev.tar.gz &&\
+    tar -xvzf postgis-3.2.0dev.tar.gz &&\
+    cd postgis-3.2.0dev &&\
+    ./configure --with-pgconfig=/usr/pgsql-13/bin/pg_config\
                 --with-gdalconfig=/usr/local/bin/gdal-config\
                 --with-geosconfig=/usr/bin/geos-config \
                 --with-xml2config=/usr/bin/xml2-config \
