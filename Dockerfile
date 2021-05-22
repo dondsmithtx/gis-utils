@@ -1,6 +1,6 @@
 FROM centos
 RUN yum -y update
-RUN echo "########## Installing base packages ##########" &&\
+RUN echo "#################### Installing base packages and PostgreSQL 13 ####################" &&\
     yum -y install epel-release &&\
     yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm &&\
     yum -qy module disable postgresql &&\
@@ -15,8 +15,8 @@ RUN echo "########## Installing base packages ##########" &&\
                    libtiff\
                    libpng\
                    libpq-devel\
-                   libxml2\
-                   libxml2-devel\
+#                   libxml2\
+#                   libxml2-devel\
                    lsof\
                    make\
                    nodejs\
@@ -34,23 +34,26 @@ RUN echo "########## Installing base packages ##########" &&\
                    unzip\
                    zip
 
-RUN echo "########## Installing Proj6 required for gdal ##########" &&\
+RUN echo "#################### Installing Proj6 required for gdal ####################" &&\
     cd /root &&\
     wget https://download.osgeo.org/proj/proj-6.3.2.zip &&\
     unzip proj-6.3.2.zip &&\
     cd proj-6.3.2 &&\
     ./configure &&\
-    make && make install
+    make &&\
+    make install
 
-RUN echo "########## Installing FileGDB API 1.5.1 for fgdb gdal driver  ##########" &&\
+RUN echo "#################### Installing FileGDB API 1.5.1 for fgdb gdal driver ####################" &&\
     cd /root && \ 
     wget https://github.com/Esri/file-geodatabase-api/raw/master/FileGDB_API_1.5.1/FileGDB_API_1_5_1-64gcc51.tar.gz &&\
     tar xvzf FileGDB_API_1_5_1-64gcc51.tar.gz &&\
     cd FileGDB_API-64gcc51 &&\
-    cp lib/*.so /usr/lib64 &&\
-    echo 'include /root/FileGDB_API-64gcc51/lib' > /etc/ld.so.conf.d/fgdb.conf
+    cp -R /root/FileGDB_API-64gcc51/ /usr/lib64/ &&\
+    echo 'include /usr/lib64/FileGDB_API-64gcc51/lib' > /etc/ld.so.conf.d/fgdb.conf
+#    cp lib/*.so /usr/lib64 &&\
+#    echo 'include /root/FileGDB_API-64gcc51/lib' > /etc/ld.so.conf.d/fgdb.conf
 
-RUN echo "########## Installing gdal with fgdb  ##########" &&\
+RUN echo "#################### Installing gdal with the fgdb driver ####################" &&\
     cd /root &&\
     wget https://github.com/OSGeo/gdal/releases/download/v3.3.0/gdal-3.3.0.tar.gz &&\
     tar -zvxf gdal-3.3.0.tar.gz &&\
@@ -64,19 +67,21 @@ RUN echo "########## Installing gdal with fgdb  ##########" &&\
                 --with-gif=internal\
                 --with-png=internal\
                 --with-libz=internal &&\
-    export LD_LIBRARY_PATH=/root/FileGDB_API-64gcc/lib:$LD_LIBRARY_PATH &&\
-    make && make install
+    export LD_LIBRARY_PATH=/usr/lib64/FileGDB_API-64gcc/lib:$LD_LIBRARY_PATH &&\
+    make &&\
+    make install
 
-RUN echo "########## Installing libiconv ##########" &&\
+RUN echo "#################### Installing libiconv ####################" &&\
     cd /root &&\  
     wget https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.16.tar.gz &&\
     tar xvzf libiconv-1.16.tar.gz &&\
     cd libiconv-1.16 &&\
     ./configure --prefix=/usr/local &&\
     cd /root/libiconv-1.16 &&\
-    make && make install 
+    make &&\
+    make install 
 
-RUN echo "########## Installing postgis ##########" &&\
+RUN echo "#################### Installing postgis ####################" &&\
     cd /root && \ 
     wget http://postgis.net/stuff/postgis-3.2.0dev.tar.gz &&\
     tar -xvzf postgis-3.2.0dev.tar.gz &&\
@@ -84,11 +89,12 @@ RUN echo "########## Installing postgis ##########" &&\
     ./configure --with-pgconfig=/usr/pgsql-13/bin/pg_config\
                 --with-gdalconfig=/usr/local/bin/gdal-config\
                 --with-geosconfig=/usr/bin/geos-config \
-                --with-xml2config=/usr/bin/xml2-config \
+#                --with-xml2config=/usr/bin/xml2-config \
                 --with-projdir=/usr/local/include/proj \
                 --with-libiconv=/root/libiconv-1.16/include \
 		--without-protobuf && \
-    make && make install
+    make &&\
+    make install
 
 ENTRYPOINT ["tail"]
 CMD ["-f","/dev/null"]
