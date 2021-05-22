@@ -48,7 +48,7 @@ RUN echo "#################### Installing FileGDB API 1.5.1 for fgdb gdal driver
     wget https://github.com/Esri/file-geodatabase-api/raw/master/FileGDB_API_1.5.1/FileGDB_API_1_5_1-64gcc51.tar.gz &&\
     tar xvzf FileGDB_API_1_5_1-64gcc51.tar.gz &&\
     cd FileGDB_API-64gcc51 &&\
-    cp -R /root/FileGDB_API-64gcc51/ /usr/lib64/ &&\
+    cp -R /root/FileGDB_API-64gcc51 /usr/lib64/ &&\
     echo 'include /usr/lib64/FileGDB_API-64gcc51/lib' > /etc/ld.so.conf.d/fgdb.conf
 #    cp lib/*.so /usr/lib64 &&\
 #    echo 'include /root/FileGDB_API-64gcc51/lib' > /etc/ld.so.conf.d/fgdb.conf
