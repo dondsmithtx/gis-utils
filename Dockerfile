@@ -1,7 +1,10 @@
 FROM centos
 RUN yum -y update
-RUN yum -y install epel-release
-RUN yum -y install curl\ 
+RUN echo "########## Installing base packages ##########" &&\
+    yum -y install epel-release &&\
+    yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm &&\
+    yum -qy module disable postgresql &&\
+    yum -y install curl\ 
                    diffutils\ 
                    file\ 
                    gcc\
@@ -20,8 +23,8 @@ RUN yum -y install curl\
                    npm\ 
                    p7zip\
                    perl\
-                   postgresql\
-                   postgresql-server-devel\
+                   postgresql13-server\
+                   postgresql13-devel\
                    rsync\
                    sqlite-devel\
                    telnet\
@@ -30,12 +33,6 @@ RUN yum -y install curl\
                    which\ 
                    unzip\
                    zip
-
-RUN echo "########## Installing postgresql13 ##########" &&\
-    dnf install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm &&\
-    dnf -qy module disable postgresql &&\
-    dnf install -y postgresql13-server &&\
-    yum -y install postgresql13-devel 
 
 RUN echo "########## Installing Proj6 required for gdal ##########" &&\
     cd /root &&\
