@@ -6,9 +6,9 @@ ARG proj6_url="https://download.osgeo.org/proj"
 ARG proj6_dir="proj-6.3.2"
 ARG proj6_pkg="proj-6.3.2.zip"
 
-ARG fgdb_dir="FileGDB_API-64gcc51"
 ARG fgdb_url="https://github.com/Esri/file-geodatabase-api/raw/master/FileGDB_API_1.5.1"
 ARG fgdb_pkg="FileGDB_API_1_5_1-64gcc51.tar.gz"
+ARG fgdb_dir="FileGDB_API-64gcc51"
 
 ARG gdal_url="https://github.com/OSGeo/gdal/releases/download/v3.3.0/"
 ARG gdal_pkg="gdal-3.3.0.tar.gz"
