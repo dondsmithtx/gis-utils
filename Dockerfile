@@ -68,10 +68,9 @@ RUN echo "#################### Installing FileGDB API for fgdb gdal driver #####
     cd /root && \
     wget ${fgdb_url}/${fgdb_pkg} && \
     tar xvzf ${fgdb_pkg} && \
-    cp -R /root/${fgdb_dir} /usr
+    cp -R /root/${fgdb_dir} /usr && \
     cp -R /root/${fgdb_dir}/lib/* /usr/lib && \
     cp -R /root/${fgdb_dir}/include/* /usr/include && \
-
     echo 'include /usr/${fgdb_dir}/lib' > /etc/ld.so.conf.d/fgdb.conf
 
 RUN echo "#################### Installing libiconv ####################" && \
