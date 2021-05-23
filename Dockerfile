@@ -84,6 +84,8 @@ RUN echo "#################### Installing libiconv ####################" && \
     make && \
     make install
 
+# Remove libxml2-devel while compiling gdal to avoid a conflict
+RUN yum -y remove libxml2-devel
 RUN echo "#################### Installing gdal with the fgdb driver ####################" && \
     cd /root && \
     wget ${gdal_url}/${gdal_pkg} && \
@@ -100,8 +102,8 @@ RUN echo "#################### Installing gdal with the fgdb driver ############
                 --with-libz=internal && \
     make && \
     make install
+RUN yum -y install libxml2-devel
 
-RUN yum -y remove libxml2-devel
 RUN echo "#################### Installing postgis ####################" && \
     cd /root && \
     wget ${postgis_url}/${postgis_pkg} && \
@@ -118,7 +120,6 @@ RUN echo "#################### Installing postgis ####################" && \
 #               --with-xml2config=/usr/bin/xml2-config \
     make && \
     make install
-RUN yum -y install libxml2-devel
 
 RUN echo "#################### Clean up software packages ####################" && \
     rm -rf /root/FileGDB_API* && \
