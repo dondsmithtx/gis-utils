@@ -3,8 +3,8 @@ FROM centos
 ARG postgresql_url="https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm"
 
 ARG proj6_url="https://download.osgeo.org/proj"
-ARG proj6_dir="proj-6.3.2"
 ARG proj6_pkg="proj-6.3.2.zip"
+ARG proj6_dir="proj-6.3.2"
 
 ARG fgdb_url="https://github.com/Esri/file-geodatabase-api/raw/master/FileGDB_API_1.5.1"
 ARG fgdb_pkg="FileGDB_API_1_5_1-64gcc51.tar.gz"
