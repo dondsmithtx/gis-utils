@@ -36,6 +36,7 @@ RUN echo "#################### Installing base packages and PostgreSQL 13 ######
                    geos-devel \
                    json-c \
                    libtiff \
+                   libxml2-devel
                    libpng \
                    libpq-devel \
                    lsof \
