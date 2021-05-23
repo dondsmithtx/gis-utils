@@ -101,7 +101,6 @@ RUN echo "#################### Installing gdal with the fgdb driver ############
     make && \
     make install
 
-RUN yum -y remove libxml2-devel
 RUN echo "#################### Installing postgis ####################" && \
     cd /root && \
     wget ${postgis_url}/${postgis_pkg} && \
@@ -114,11 +113,8 @@ RUN echo "#################### Installing postgis ####################" && \
                 --with-projdir=/usr/local/include/proj \
                 --with-libiconv=/usr/include \
 		        --without-protobuf && \
-#               libxml2 removed due to incompatibility between with the embedded copy within libFileGDBAPI
-#               --with-xml2config=/usr/bin/xml2-config \
     make && \
     make install
-RUN yum -y install libxml2-devel
 
 RUN echo "#################### Clean up software packages ####################" && \
     rm -rf /root/FileGDB_API* && \
