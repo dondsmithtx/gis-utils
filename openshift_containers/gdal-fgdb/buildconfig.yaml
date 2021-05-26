@@ -1,0 +1,108 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    app: gdal-fgdb
+  name: gdal-fgdb
+  namespace: gis-sandbox
+  selfLink: /apis/build.openshift.io/v1/namespaces/gis-sandbox/buildconfigs/gdal-fgdb
+spec:
+  failedBuildsHistoryLimit: 5
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'gdal-fgdb:latest'
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    dockerfile: "FROM gdal-fgdb\n
+                 ARG fgdb_url='https://github.com/Esri/file-geodatabase-api/raw/master/FileGDB_API_1.5.1'\n
+                 ARG fgdb_pkg='FileGDB_API_1_5_1-64gcc51.tar.gz'\n
+                 ARG fgdb_dir='FileGDB_API-64gcc51'\n
+                 ARG proj6_url='https://download.osgeo.org/proj'\n
+                 ARG proj6_pkg='proj-6.3.2.zip'\n
+                 ARG proj6_version='6.3.2'\n
+                 ARG gdal_url='https://github.com/OSGeo/gdal/releases/download/v3.3.0/'\n
+                 ARG gdal_pkg='gdal-3.3.0.tar.gz'\n
+                 ARG gdal_version='3.3.0'\n
+                 ARG libiconv_url='https://ftp.gnu.org/pub/gnu/libiconv'\n
+                 ARG libiconv_pkg='libiconv-1.16.tar.gz'\n
+                 ARG libiconv_version='1.16'\n
+                 ARG postgis_url='http://postgis.net/stuff'\n
+                 ARG postgis_pkg='postgis-3.2.0dev.tar.gz'\n
+                 ARG postgis_version='3.2.0'\n
+                 RUN echo '#################### Installing FileGDB API for fgdb gdal driver ####################' && \
+                     cd /root && \
+                     wget ${fgdb_url}/${fgdb_pkg} && \
+                     tar xvzf ${fgdb_pkg} && \
+                     cp -R /root/${fgdb_dir} /usr && \
+                     cp -R /root/${fgdb_dir}/lib/* /usr/lib && \
+                     cp -R /root/${fgdb_dir}/include/* /usr/include && \
+                     cp -R /root/${fgdb_dir}/lib/*.so /usr/lib64\n
+                 RUN echo '#################### Installing Proj6 required for gdal ####################' && \
+                     cd /root && \
+                     wget ${proj6_url}/${proj6_pkg} && \
+                     unzip ${proj6_pkg} && \
+                     cd proj-${proj6_version} && \
+                     ./configure && \
+                     make && \
+                     make install\n
+                 RUN echo '#################### Installing libiconv ####################' && \
+                     cd /root && \
+                     wget ${libiconv_url}/${libiconv_pkg} && \
+                     tar xvzf ${libiconv_pkg} && \
+                     cd libiconv-${libiconv_version} && \
+                     ./configure --prefix=/usr/local && \
+                     cd /root/libiconv-${libiconv_version} && \
+                     make && \
+                     make install\n
+                 RUN echo '#################### Installing gdal with the fgdb driver ####################' && \
+                     cd /root && \
+                     wget ${gdal_url}/${gdal_pkg} && \
+                     tar -zvxf ${gdal_pkg} &&\
+                     cd gdal-${gdal_version} && \
+                     ./configure --with-fgdb=/usr/${fgdb_dir} \
+                                 --with-proj=/usr/local \
+                                 --with-threads \
+                                 --with-libtiff=internal \
+                                 --with-geotiff=internal \
+                                 --with-jpeg=internal \
+                                 --with-gif=internal \
+                                 --with-png=internal \
+                                 --with-libz=internal && \
+                     make && \
+                     make install\n
+                 RUN echo '#################### Installing postgis ####################' && \
+                     cd /root && \
+                     wget ${postgis_url}/${postgis_pkg} && \
+                     tar -xvzf ${postgis_pkg} && \
+                     cd postgis-${postgis_version}dev && \
+                     cp /root/libiconv-${libiconv_version}/include/* /usr/include && \
+                     ./configure --with-pgconfig=/usr/pgsql-${postgres_version}/bin/pg_config \
+                                 --with-gdalconfig=/usr/local/bin/gdal-config \
+                                 --with-geosconfig=/usr/bin/geos-config \
+                                 --with-projdir=/usr/local/include/proj \
+                                 --with-libiconv=/usr/include \
+                                 --without-protobuf && \
+                     make && \
+                     make install\n
+                 RUN echo '#################### Clean up software packages ####################' && \
+                     rm -rf /root/FileGDB_API* && \
+                     rm -rf /root/proj-* && \
+                     rm -rf /root/gdal-* && \
+                     rm -rf /root/libiconv-* && \
+                     rm -rf /root/postgis-*\n
+
+                ENTRYPOINT [\"tail\"]\n
+                CMD [\"-f\",\"/dev/null\"]"
+  strategy:
+    dockerStrategy:
+      from:
+        kind: ImageStreamTag
+        name: 'gisbase-centos:latest'
+    type: Docker
+  successfulBuildsHistoryLimit: 5
+status:
+  lastVersion: 1

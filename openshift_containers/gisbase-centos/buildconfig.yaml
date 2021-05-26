@@ -1,0 +1,67 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  labels:
+    app: gisbase-centos
+  name: gisbase-centos
+  namespace: gis-sandbox
+  selfLink: /apis/build.openshift.io/v1/namespaces/gis-sandbox/buildconfigs/gisbase-centos
+spec:
+  failedBuildsHistoryLimit: 5
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'gisbase-centos:latest'
+  postCommit: {}
+  resources: {}
+  runPolicy: Serial
+  source:
+    dockerfile: "FROM centos:8\n
+                ARG postgresql_url='https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm'\n
+                RUN yum -y update\n
+                RUN echo '#################### Installing base packages and PostgreSQL 13 ####################'\n
+                RUN yum -y install epel-release\n
+                RUN yum -y install ${postgresql_url}\n
+                RUN yum -qy module disable postgresql\n
+                RUN yum -y install curl \
+                                 diffutils \
+                                 file \
+                                 gcc \
+                                 gcc-c++ \
+                                 geos \
+                                 geos-devel \
+                                 git \
+                                 json-c \
+                                 libtiff \
+                                 libxml2-devel \
+                                 libpng \
+                                 libpq-devel \
+                                 lsof \
+                                 make \
+                                 nodejs \
+                                 npm \
+                                 p7zip \
+                                 perl \
+                                 postgresql13-server \
+                                 postgresql13-devel \
+                                 rsync \
+                                 sqlite-devel \
+                                 telnet \
+                                 tree \
+                                 wget \
+                                 which \
+                                 unzip \
+                                 zip\n
+                RUN yum -y update\n
+                ENTRYPOINT [\"tail\"]\n
+                CMD [\"-f\",\"/dev/null\"]"
+  strategy:
+    dockerStrategy:
+      from:
+        kind: ImageStreamTag
+        name: 'centos:latest'
+    type: Docker
+  successfulBuildsHistoryLimit: 5
+status:
+  lastVersion: 1

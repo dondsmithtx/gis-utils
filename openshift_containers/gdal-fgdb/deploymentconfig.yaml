@@ -1,0 +1,29 @@
+kind: "DeploymentConfig"
+apiVersion: "apps.openshift.io/v1"
+metadata:
+  name: "gdal-fgdb"
+spec:
+  template: 
+    metadata:
+      labels:
+        name: "gisbase-centos"
+    spec:
+      containers:
+        - name: "gisbase-centos"
+          image: "docker-registry.default.svc:5000/gis-sandbox/gdal-fgdb:latest"
+  replicas: 1 
+  triggers:
+    - type: "ConfigChange" 
+    - type: "ImageChange" 
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - "gisbase-centos"
+        from:
+          kind: "ImageStreamTag"
+          name: "gisbase-centos:latest"
+  strategy: 
+    type: "Rolling"
+  paused: false 
+  revisionHistoryLimit: 2 
+  minReadySeconds: 0 
